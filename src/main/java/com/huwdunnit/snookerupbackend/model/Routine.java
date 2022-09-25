@@ -2,10 +2,7 @@ package com.huwdunnit.snookerupbackend.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 /**
@@ -25,6 +22,7 @@ public class Routine {
 
     private String title;
 
+    @Column(length = 1000)
     private String description;
 
     @Override
