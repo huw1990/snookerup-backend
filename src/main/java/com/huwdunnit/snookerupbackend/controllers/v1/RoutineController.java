@@ -1,6 +1,6 @@
 package com.huwdunnit.snookerupbackend.controllers.v1;
 
-import com.huwdunnit.snookerupbackend.controllers.exceptions.RoutineNotFoundException;
+import com.huwdunnit.snookerupbackend.controllers.exceptions.ResourceNotFoundException;
 import com.huwdunnit.snookerupbackend.model.Routine;
 import com.huwdunnit.snookerupbackend.model.RoutineList;
 import com.huwdunnit.snookerupbackend.repositories.RoutineRepository;
@@ -29,6 +29,6 @@ public class RoutineController {
 
     @GetMapping("{id}")
     public Routine getRoutineById(@PathVariable Long id){
-        return routineRepository.findById(id).orElseThrow(() -> new RoutineNotFoundException(id));
+        return routineRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 }

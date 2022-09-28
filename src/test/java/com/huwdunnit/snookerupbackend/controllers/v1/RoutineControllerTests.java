@@ -32,7 +32,7 @@ public class RoutineControllerTests {
     RoutineRepository routineRepository;
 
     @Mock
-    RoutineNotFoundAdvice routineNotFoundAdvice;
+    ResourceNotFoundAdvice resourceNotFoundAdvice;
 
     @InjectMocks
     RoutineController routineController;
@@ -45,7 +45,7 @@ public class RoutineControllerTests {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(routineController)
-                .setControllerAdvice(routineNotFoundAdvice)
+                .setControllerAdvice(resourceNotFoundAdvice)
                 .build();
     }
 
