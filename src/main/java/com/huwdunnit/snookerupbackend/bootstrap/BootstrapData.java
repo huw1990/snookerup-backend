@@ -68,12 +68,12 @@ public class BootstrapData implements CommandLineRunner {
 
         Score score1 = new Score();
         score1.setRoutine(theLineUpRoutine);
-        score1.setUser(player);
+        score1.setPlayer(player);
         score1.setScore(100);
 
         Score score2 = new Score();
         score2.setRoutine(theLineUpRoutine);
-        score2.setUser(player);
+        score2.setPlayer(player);
         score2.setScore(60);
 
         routineRepository.save(theLineUpRoutine);

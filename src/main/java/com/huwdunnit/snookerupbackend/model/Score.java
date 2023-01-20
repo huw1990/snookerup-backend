@@ -24,7 +24,7 @@ public class Score {
     private Routine routine;
 
     @ManyToOne
-    private Player user;
+    private Player player;
 
     private int score;
 

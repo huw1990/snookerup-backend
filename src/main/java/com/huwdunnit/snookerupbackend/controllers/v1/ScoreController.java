@@ -5,10 +5,8 @@ import com.huwdunnit.snookerupbackend.model.Score;
 import com.huwdunnit.snookerupbackend.model.ScoreList;
 import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for API requests related to scores.
@@ -30,5 +28,11 @@ public class ScoreController {
     @GetMapping("{id}")
     public Score getScoreById(@PathVariable Long id){
         return scoreRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Score createNewScore(@RequestBody Score score){
+        return scoreRepository.save(score);
     }
 }
