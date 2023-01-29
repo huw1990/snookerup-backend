@@ -5,14 +5,20 @@ import com.huwdunnit.snookerupbackend.model.Player;
 import com.huwdunnit.snookerupbackend.model.Routine;
 import com.huwdunnit.snookerupbackend.model.Score;
 import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
+import com.huwdunnit.snookerupbackend.services.ScoreService;
+import com.huwdunnit.snookerupbackend.web.controllers.v1.ScoreController;
+import com.huwdunnit.snookerupbackend.web.model.ScoreDto;
+import com.huwdunnit.snookerupbackend.web.model.ScoreDtoList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScoreControllerTests {
 
     @Mock
-    ScoreRepository scoreRepository;
-
-    @Mock
-    ResourceNotFoundAdvice resourceNotFoundAdvice;
+    ScoreService scoreService;
 
     @InjectMocks
     ScoreController scoreController;
@@ -46,49 +49,30 @@ public class ScoreControllerTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(scoreController)
-                .setControllerAdvice(resourceNotFoundAdvice)
                 .build();
     }
 
     @Test
     public void getAllScores_Should_ReturnAllScores() throws Exception {
         // Create variables
-        // Routines
-        Routine routine1 = new Routine();
-        routine1.setId(1L);
-        routine1.setTitle("Title 1");
-        routine1.setDescription("Description 1");
-        Routine routine2 = new Routine();
-        routine2.setId(2L);
-        routine2.setTitle("Title 2");
-        routine2.setDescription("Description 2");
-        // Players
-        Player player1 = new Player();
-        player1.setFirstName("Mark");
-        player1.setLastName("Williams");
-        player1.setEmail("markjw@example.com");
-        Player player2 = new Player();
-        player2.setFirstName("Stephen");
-        player2.setLastName("Hendry");
-        player2.setEmail("7times@example.com");
-        // Scores
-        Score score1 = new Score();
+        ScoreDto score1 = new ScoreDto();
         score1.setScore(78);
-        score1.setRoutine(routine1);
-        score1.setPlayer(player1);
-        Score score2 = new Score();
+        score1.setRoutineId(10L);
+        score1.setPlayerId(20L);
+        ScoreDto score2 = new ScoreDto();
         score2.setScore(120);
-        score2.setRoutine(routine2);
-        score2.setPlayer(player2);
-        List<Score> scores = List.of(score1, score2);
+        score2.setRoutineId(11L);
+        score2.setPlayerId(21L);
+        List<ScoreDto> scores = List.of(score1, score2);
+        ScoreDtoList scoreDtoList = new ScoreDtoList(scores);
 
         //Set mock expectations
-        when(scoreRepository.findAll()).thenReturn(scores);
+        when(scoreService.listScores()).thenReturn(scoreDtoList);
 
         //Execute method under test
         mockMvc.perform(get("/api/v1/scores/")
@@ -100,25 +84,14 @@ public class ScoreControllerTests {
     @Test
     public void getScoreById_Should_ReturnCorrectScore_When_IdExists() throws Exception {
         // Create variables
-        // Routine
-        Routine routine1 = new Routine();
-        routine1.setId(1L);
-        routine1.setTitle("Title 1");
-        routine1.setDescription("Description 1");
-        // Player
-        Player player1 = new Player();
-        player1.setFirstName("Mark");
-        player1.setLastName("Williams");
-        player1.setEmail("markjw@example.com");
-        // Score
-        Score score1 = new Score();
+        ScoreDto score1 = new ScoreDto();
         score1.setId(1L);
         score1.setScore(78);
-        score1.setRoutine(routine1);
-        score1.setPlayer(player1);
+        score1.setRoutineId(10L);
+        score1.setPlayerId(11L);
 
         //Set mock expectations
-        when(scoreRepository.findById(1L)).thenReturn(Optional.of(score1));
+        when(scoreService.findScoreById(1L)).thenReturn(score1);
 
         //Execute method under test
         mockMvc.perform(get("/api/v1/scores/1")
@@ -132,7 +105,8 @@ public class ScoreControllerTests {
         // Create variables
 
         //Set mock expectations
-        when(scoreRepository.findById(700L)).thenReturn(Optional.ofNullable(null));
+        when(scoreService.findScoreById(700L)).thenThrow(
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Score Not Found, ID: 700"));
 
         //Execute method under test
         mockMvc.perform(get("/api/v1/scores/700")
@@ -143,29 +117,18 @@ public class ScoreControllerTests {
     @Test
     public void createNewScore_Should_ReturnNewScoreWithId() throws Exception {
         // Create variables
-        // Routine
-        Routine routine1 = new Routine();
-        routine1.setId(1L);
-        routine1.setTitle("Title 1");
-        routine1.setDescription("Description 1");
-        // Player
-        Player player1 = new Player();
-        player1.setFirstName("Mark");
-        player1.setLastName("Williams");
-        player1.setEmail("markjw@example.com");
-        // Score
-        Score score1 = new Score();
+        ScoreDto score1 = new ScoreDto();
         score1.setScore(78);
-        score1.setRoutine(routine1);
-        score1.setPlayer(player1);
-        Score score1WithId = new Score();
+        score1.setRoutineId(10L);
+        score1.setPlayerId(20L);
+        ScoreDto score1WithId = new ScoreDto();
         score1WithId.setScore(78);
-        score1WithId.setRoutine(routine1);
-        score1WithId.setPlayer(player1);
+        score1WithId.setRoutineId(10L);
+        score1WithId.setPlayerId(11L);
         score1WithId.setId(1L);
 
         //Set mock expectations
-        when(scoreRepository.save(score1)).thenReturn(score1WithId);
+        when(scoreService.saveScore(score1)).thenReturn(score1WithId);
 
         //Execute method under test
         mockMvc.perform(post("/api/v1/scores/")
