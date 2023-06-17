@@ -1,7 +1,6 @@
 package com.huwdunnit.snookerupbackend.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huwdunnit.snookerupbackend.model.Player;
 import com.huwdunnit.snookerupbackend.services.PlayerService;
 import com.huwdunnit.snookerupbackend.web.controllers.v1.PlayerController;
 import com.huwdunnit.snookerupbackend.web.model.PlayerDto;
@@ -18,13 +17,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,5 +131,66 @@ public class PlayerControllerTests {
                         .content(objectMapper.writeValueAsString(player1)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)));
+    }
+
+    @Test
+    public void updatePlayer_Should_ReturnSuccess_When_PlayerFound() throws Exception {
+        // Create variables
+        PlayerDto player1 = new PlayerDto();
+        player1.setId(1L);
+        player1.setFirstName("Mark");
+        player1.setLastName("Williams");
+        player1.setEmail("markjw@example.com");
+        PlayerDto updatedPlayer1 = new PlayerDto();
+        updatedPlayer1.setId(1L);
+        updatedPlayer1.setFirstName("Mark");
+        updatedPlayer1.setLastName("Williams");
+        updatedPlayer1.setEmail("markjw@snooker.com");
+
+        //Set mock expectations
+
+        //Execute method under test
+        mockMvc.perform(put("/api/v1/players/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedPlayer1)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void updatePlayer_Should_ReturnNotFound_When_PlayerNotFound() throws Exception {
+        // Create variables
+        PlayerDto updatedPlayer700 = new PlayerDto();
+        updatedPlayer700.setId(700L);
+        updatedPlayer700.setFirstName("Mark");
+        updatedPlayer700.setLastName("Williams");
+        updatedPlayer700.setEmail("markjw@snooker.com");
+
+        //Set mock expectations
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Player Not Found, ID: 700"))
+                .when(playerService).updatePlayer(700L, updatedPlayer700);
+
+        mockMvc.perform(put("/api/v1/players/700")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedPlayer700)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updatePlayer_Should_ReturnBadRequest_When_PlayerIDsDontMatch() throws Exception {
+        // Create variables
+        PlayerDto updatedPlayer1 = new PlayerDto();
+        updatedPlayer1.setId(1L);
+        updatedPlayer1.setFirstName("Mark");
+        updatedPlayer1.setLastName("Williams");
+        updatedPlayer1.setEmail("markjw@snooker.com");
+
+        //Set mock expectations
+        doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Player IDs not matching"))
+                .when(playerService).updatePlayer(2L, updatedPlayer1);
+
+        mockMvc.perform(put("/api/v1/players/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedPlayer1)))
+                .andExpect(status().isBadRequest());
     }
 }

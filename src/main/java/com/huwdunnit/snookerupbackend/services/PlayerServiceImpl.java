@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -57,5 +58,23 @@ public class PlayerServiceImpl implements PlayerService {
         Player savedPlayer = playerRepository.save(playerMapper.playerDtoToPlayer(playerDto));
         log.debug("Player saved with ID={}", savedPlayer.getId());
         return playerMapper.playerToPlayerDto(savedPlayer);
+    }
+
+    @Override
+    public void updatePlayer(Long playerId, PlayerDto playerDto) {
+        log.debug("updatePlayer, playerId={} playerDto={}", playerId, playerDto);
+        if (playerId != playerDto.getId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Player IDs not matching");
+        }
+        Optional<Player> playerOptional = playerRepository.findById(playerId);
+
+        playerOptional.ifPresentOrElse(player -> {
+            player.setEmail(playerDto.getEmail());
+            player.setFirstName(playerDto.getFirstName());
+            player.setLastName(playerDto.getLastName());
+            playerRepository.save(player);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player Not Found. ID: " + playerId);
+        });
     }
 }

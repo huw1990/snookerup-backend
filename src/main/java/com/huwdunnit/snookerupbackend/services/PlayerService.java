@@ -29,4 +29,11 @@ public interface PlayerService {
      * @return A DTO of the saved player (with extra ID after adding to the DB).
      */
     PlayerDto savePlayer(PlayerDto playerDto);
+
+    /**
+     * Updates a player.
+     * @param playerId The ID of the player to update
+     * @param playerDto A DTO of the player to update
+     */
+    void updatePlayer(Long playerId, PlayerDto playerDto);
 }

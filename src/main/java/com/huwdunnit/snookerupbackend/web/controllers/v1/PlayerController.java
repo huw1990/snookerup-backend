@@ -48,4 +48,11 @@ public class PlayerController {
 
         return new ResponseEntity<>(savedDto, httpHeaders, HttpStatus.CREATED);
     }
+
+    @PutMapping(path = {"/{id}"})
+    public ResponseEntity updatePlayer(@PathVariable Long id, @RequestBody PlayerDto playerDto){
+        playerService.updatePlayer(id, playerDto);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
