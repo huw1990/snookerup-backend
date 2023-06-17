@@ -24,4 +24,6 @@ public class ScoreDto {
 
     private int score;
 
+    private String dateMade;
+
 }

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 /**
  * Bootstraps some initial data into the DB.
  * @author Huw
@@ -70,11 +72,15 @@ public class BootstrapData implements CommandLineRunner {
         score1.setRoutine(theLineUpRoutine);
         score1.setPlayer(player);
         score1.setScore(100);
+        // Set date to 10:12 on 17th June 2023
+        score1.setDateMade(LocalDateTime.of(2023, 6, 17, 10, 12, 0));
 
         Score score2 = new Score();
         score2.setRoutine(theLineUpRoutine);
         score2.setPlayer(player);
         score2.setScore(60);
+        // Set date to 10:23 on 17th June 2023
+        score2.setDateMade(LocalDateTime.of(2023, 6, 17, 10, 23, 0));
 
         routineRepository.save(theLineUpRoutine);
         routineRepository.save(theTLineUpRoutine);

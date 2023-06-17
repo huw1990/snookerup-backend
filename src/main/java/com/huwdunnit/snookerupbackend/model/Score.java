@@ -3,6 +3,7 @@ package com.huwdunnit.snookerupbackend.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -27,6 +28,9 @@ public class Score {
     private Player player;
 
     private int score;
+
+    // When the score was made (note this could be different to when the entry was added to the DB!)
+    private LocalDateTime dateMade;
 
     @Override
     public boolean equals(Object o) {

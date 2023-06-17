@@ -64,10 +64,12 @@ public class ScoreControllerTests {
         score1.setScore(78);
         score1.setRoutineId(10L);
         score1.setPlayerId(20L);
+        score1.setDateMade("2023-06-17T10:12:00");
         ScoreDto score2 = new ScoreDto();
         score2.setScore(120);
         score2.setRoutineId(11L);
         score2.setPlayerId(21L);
+        score1.setDateMade("2023-06-17T10:23:00");
         List<ScoreDto> scores = List.of(score1, score2);
         ScoreDtoList scoreDtoList = new ScoreDtoList(scores);
 
@@ -89,6 +91,7 @@ public class ScoreControllerTests {
         score1.setScore(78);
         score1.setRoutineId(10L);
         score1.setPlayerId(11L);
+        score1.setDateMade("2023-06-17T10:12:00");
 
         //Set mock expectations
         when(scoreService.findScoreById(1L)).thenReturn(score1);
@@ -121,11 +124,13 @@ public class ScoreControllerTests {
         score1.setScore(78);
         score1.setRoutineId(10L);
         score1.setPlayerId(20L);
+        score1.setDateMade("2023-06-17T10:12:00");
         ScoreDto score1WithId = new ScoreDto();
         score1WithId.setScore(78);
         score1WithId.setRoutineId(10L);
         score1WithId.setPlayerId(11L);
         score1WithId.setId(1L);
+        score1WithId.setDateMade("2023-06-17T10:12:00");
 
         //Set mock expectations
         when(scoreService.saveScore(score1)).thenReturn(score1WithId);
