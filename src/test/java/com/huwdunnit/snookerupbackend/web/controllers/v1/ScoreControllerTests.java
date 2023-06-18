@@ -1,4 +1,4 @@
-package com.huwdunnit.snookerupbackend.controllers.v1;
+package com.huwdunnit.snookerupbackend.web.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huwdunnit.snookerupbackend.services.ScoreService;

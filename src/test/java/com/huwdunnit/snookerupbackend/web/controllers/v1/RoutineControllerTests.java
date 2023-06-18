@@ -1,4 +1,4 @@
-package com.huwdunnit.snookerupbackend.controllers.v1;
+package com.huwdunnit.snookerupbackend.web.controllers.v1;
 
 import com.huwdunnit.snookerupbackend.model.Routine;
 import com.huwdunnit.snookerupbackend.repositories.RoutineRepository;
