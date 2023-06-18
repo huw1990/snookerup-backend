@@ -1,10 +1,6 @@
 package com.huwdunnit.snookerupbackend.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huwdunnit.snookerupbackend.model.Player;
-import com.huwdunnit.snookerupbackend.model.Routine;
-import com.huwdunnit.snookerupbackend.model.Score;
-import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
 import com.huwdunnit.snookerupbackend.services.ScoreService;
 import com.huwdunnit.snookerupbackend.web.controllers.v1.ScoreController;
 import com.huwdunnit.snookerupbackend.web.model.ScoreDto;
@@ -21,7 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -69,7 +64,7 @@ public class ScoreControllerTests {
         score2.setScore(120);
         score2.setRoutineId(11L);
         score2.setPlayerId(21L);
-        score1.setDateMade("2023-06-17T10:23:00");
+        score2.setDateMade("2023-06-17T10:23:00");
         List<ScoreDto> scores = List.of(score1, score2);
         ScoreDtoList scoreDtoList = new ScoreDtoList(scores);
 
@@ -81,6 +76,27 @@ public class ScoreControllerTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scores", hasSize(2)));
+    }
+
+    @Test
+    public void getAllScoresBetweenDateRange_Should_ReturnOnlyScoresWithinDateRange() throws Exception {
+        // Create variables
+        ScoreDto score1 = new ScoreDto();
+        score1.setScore(78);
+        score1.setRoutineId(10L);
+        score1.setPlayerId(20L);
+        score1.setDateMade("2023-06-17T10:12:00");
+        List<ScoreDto> scores = List.of(score1);
+        ScoreDtoList scoreDtoList = new ScoreDtoList(scores);
+
+        //Set mock expectations
+        when(scoreService.findScoreByDateRange("2023-06-17T10:00:00", "2023-06-17T10:20:00")).thenReturn(scoreDtoList);
+
+        //Execute method under test
+        mockMvc.perform(get("/api/v1/scores?start=2023-06-17T10:00:00&end=2023-06-17T10:20:00")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scores", hasSize(1)));
     }
 
     @Test

@@ -29,4 +29,12 @@ public interface ScoreService {
      * @return A DTO of the saved score (with extra ID after adding to the DB).
      */
     ScoreDto saveScore(ScoreDto scoreDto);
+
+    /**
+     * Find all scores between a date range.
+     * @param startDate The start of the date range, in ISO 8601 format
+     * @param endDate The end of the date range, in ISO 8601 format
+     * @return All scores in the DB  within this range
+     */
+    ScoreDtoList findScoreByDateRange(String startDate, String endDate);
 }

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,12 +45,16 @@ public class ScoreServiceImpl implements ScoreService {
     public ScoreDtoList listScores() {
         log.debug("listScores");
         List<Score> scores = scoreRepository.findAll();
-        log.debug("Number of scores={}", scores.size());
-        List <ScoreDto> scoreDtos = scores.stream()
-                .map(scoreMapper::scoreToScoreDto)
-                .collect(Collectors.toList());
-        //TODO: Set routine and player IDs!
-        return new ScoreDtoList(scoreDtos);
+        return convertScoresListToDtos(scores);
+    }
+
+    @Override
+    public ScoreDtoList findScoreByDateRange(String startDate, String endDate) {
+        log.debug("findScoreByDateRange startDate={} endDate={}", startDate, endDate);
+        LocalDateTime start = LocalDateTime.parse(startDate);
+        LocalDateTime end = LocalDateTime.parse(endDate);
+        List<Score> scores = scoreRepository.findByDateMadeBetween(start, end);
+        return convertScoresListToDtos(scores);
     }
 
     @Override
@@ -58,7 +63,6 @@ public class ScoreServiceImpl implements ScoreService {
         Score score = scoreRepository.findById(scoreId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Score Not Found, ID: " + scoreId));
         log.debug("Found score={}", score);
-        //TODO: Set routine and player IDs!
         return scoreMapper.scoreToScoreDto(score);
     }
 
@@ -83,5 +87,13 @@ public class ScoreServiceImpl implements ScoreService {
         Score savedScore = scoreRepository.save(score);
         log.debug("Saved score={}", savedScore);
         return scoreMapper.scoreToScoreDto(savedScore);
+    }
+
+    private ScoreDtoList convertScoresListToDtos(List<Score> scores) {
+        log.debug("Number of scores={}", scores.size());
+        List <ScoreDto> scoreDtos = scores.stream()
+                .map(scoreMapper::scoreToScoreDto)
+                .collect(Collectors.toList());
+        return new ScoreDtoList(scoreDtos);
     }
 }
