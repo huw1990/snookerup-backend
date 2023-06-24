@@ -6,12 +6,12 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Object to encapsulate a list of player DTOs.
+ * Object to encapsulate a list of user DTOs.
  * @author Huw
  */
 @Data
 @AllArgsConstructor
-public class PlayerDtoList {
+public class UserDtoList {
 
-    private List<PlayerDto> players;
+    private List<UserDto> users;
 }

@@ -1,9 +1,7 @@
 package com.huwdunnit.snookerupbackend.web.controllers.v1;
 
-import com.huwdunnit.snookerupbackend.repositories.PlayerRepository;
 import com.huwdunnit.snookerupbackend.repositories.RoutineRepository;
 import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
-import com.huwdunnit.snookerupbackend.services.PlayerService;
 import com.huwdunnit.snookerupbackend.services.RoutineService;
 import com.huwdunnit.snookerupbackend.services.ScoreService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,16 +26,10 @@ public abstract class BaseIT {
     MockMvc mockMvc;
 
     @MockBean
-    PlayerRepository playerRepository;
-
-    @MockBean
     RoutineRepository routineRepository;
 
     @MockBean
     ScoreRepository scoreRepository;
-
-    @MockBean
-    PlayerService playerService;
 
     @MockBean
     RoutineService routineService;

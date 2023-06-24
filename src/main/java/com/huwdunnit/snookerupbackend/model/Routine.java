@@ -13,7 +13,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 public class Routine {
 
     @Id

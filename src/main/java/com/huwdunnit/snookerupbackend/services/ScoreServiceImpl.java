@@ -1,9 +1,9 @@
 package com.huwdunnit.snookerupbackend.services;
 
-import com.huwdunnit.snookerupbackend.model.Player;
+import com.huwdunnit.snookerupbackend.model.security.User;
 import com.huwdunnit.snookerupbackend.model.Routine;
 import com.huwdunnit.snookerupbackend.model.Score;
-import com.huwdunnit.snookerupbackend.repositories.PlayerRepository;
+import com.huwdunnit.snookerupbackend.repositories.security.UserRepository;
 import com.huwdunnit.snookerupbackend.repositories.RoutineRepository;
 import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
 import com.huwdunnit.snookerupbackend.web.mappers.ScoreMapper;
@@ -32,8 +32,8 @@ public class ScoreServiceImpl implements ScoreService {
     /** Repository for DB operations related to scores. */
     private final ScoreRepository scoreRepository;
 
-    /** Repository for DB operations related to players (i.e. the player that posted the score). */
-    private final PlayerRepository playerRepository;
+    /** Repository for DB operations related to users (i.e. the player that posted the score). */
+    private final UserRepository userRepository;
 
     /** Repository for DB operations related to routines (i.e. the routine the score was achieved on). */
     private final RoutineRepository routineRepository;
@@ -72,7 +72,7 @@ public class ScoreServiceImpl implements ScoreService {
         //Lookup linked objects from IDs
         Routine routine = routineRepository.findById(scoreDto.getRoutineId())
                 .orElseThrow(() -> new RuntimeException("Routine not found"));
-        Player player = playerRepository.findById(scoreDto.getPlayerId())
+        User player = userRepository.findById(scoreDto.getPlayerId())
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
         // Convert to proper score from DTO

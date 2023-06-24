@@ -3,7 +3,7 @@ package com.huwdunnit.snookerupbackend.web.model;
 import lombok.*;
 
 /**
- * External-facing DTO for a Player.
+ * External-facing DTO for a User.
  *
  * @author Huw
  */
@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class PlayerDto {
+public class UserDto {
 
     private Long id;
 

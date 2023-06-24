@@ -1,5 +1,6 @@
 package com.huwdunnit.snookerupbackend.model;
 
+import com.huwdunnit.snookerupbackend.model.security.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 public class Score {
 
     @Id
@@ -25,7 +28,7 @@ public class Score {
     private Routine routine;
 
     @ManyToOne
-    private Player player;
+    private User player;
 
     private int score;
 
