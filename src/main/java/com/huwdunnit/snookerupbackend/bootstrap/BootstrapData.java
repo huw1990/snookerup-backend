@@ -3,10 +3,12 @@ package com.huwdunnit.snookerupbackend.bootstrap;
 import com.huwdunnit.snookerupbackend.model.Routine;
 import com.huwdunnit.snookerupbackend.model.Score;
 import com.huwdunnit.snookerupbackend.model.security.Authority;
+import com.huwdunnit.snookerupbackend.model.security.Role;
 import com.huwdunnit.snookerupbackend.model.security.User;
 import com.huwdunnit.snookerupbackend.repositories.RoutineRepository;
 import com.huwdunnit.snookerupbackend.repositories.ScoreRepository;
 import com.huwdunnit.snookerupbackend.repositories.security.AuthorityRepository;
+import com.huwdunnit.snookerupbackend.repositories.security.RoleRepository;
 import com.huwdunnit.snookerupbackend.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Bootstraps some initial data into the DB.
@@ -29,14 +35,36 @@ public class BootstrapData implements CommandLineRunner {
     private final ScoreRepository scoreRepository;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
         log.debug("Loading bootstrap data...");
 
-        Authority admin = authorityRepository.save(Authority.builder().role("ADMIN").build());
-        Authority userRole = authorityRepository.save(Authority.builder().role("USER").build());
+        // Permissions for operations on any score
+        Authority createScore = authorityRepository.save(Authority.builder().permission("score.create").build());
+        Authority updateScore = authorityRepository.save(Authority.builder().permission("score.update").build());
+        Authority readScore = authorityRepository.save(Authority.builder().permission("score.read").build());
+        Authority deleteScore = authorityRepository.save(Authority.builder().permission("score.delete").build());
+
+        // Permissions for operations on scores for the same user
+        Authority userCreateScore = authorityRepository.save(Authority.builder().permission("user.score.create").build());
+        Authority userUpdateScore = authorityRepository.save(Authority.builder().permission("user.score.update").build());
+        Authority userReadScore = authorityRepository.save(Authority.builder().permission("user.score.read").build());
+        Authority userDeleteScore = authorityRepository.save(Authority.builder().permission("user.score.delete").build());
+
+        Authority readUsers = authorityRepository.save(Authority.builder().permission("users.read").build());
+
+        Role adminRole = roleRepository.save(Role.builder().name("ADMIN").build());
+        Role userRole = roleRepository.save(Role.builder().name("USER").build());
+
+        adminRole.setAuthorities(new HashSet<>(Set.of(createScore, updateScore, readScore, deleteScore,
+                userCreateScore, userUpdateScore, userReadScore, userDeleteScore, readUsers)));
+        userRole.setAuthorities(new HashSet<>(Set.of(userCreateScore, userUpdateScore, userReadScore, userDeleteScore)));
+
+        roleRepository.saveAll(Arrays.asList(adminRole, userRole));
 
         Routine theLineUpRoutine = routineRepository.save(Routine.builder()
                 .title("The Line Up")
@@ -72,18 +100,36 @@ public class BootstrapData implements CommandLineRunner {
                         "i.e. yellow, green, brown, blue, pink, black.")
                 .build());
 
-        User player = userRepository.save(User.builder()
+        User admin = userRepository.save(User.builder()
+                .firstName("Huw")
+                .lastName("Carpenter")
+                .email("huw@example.com")
+                .username("huw")
+                .password(passwordEncoder.encode("password"))
+                .role(adminRole)
+                .build());
+
+        User player1 = userRepository.save(User.builder()
                 .firstName("Mark")
                 .lastName("Williams")
                 .email("mjw@example.com")
                 .username("mjw")
                 .password(passwordEncoder.encode("snooker"))
-                .authority(userRole)
+                .role(userRole)
+                .build());
+
+        User player2 = userRepository.save(User.builder()
+                .firstName("Neil")
+                .lastName("Robertson")
+                .email("thunder@example.com")
+                .username("neil")
+                .password(passwordEncoder.encode("robbo"))
+                .role(userRole)
                 .build());
 
         Score score1 = scoreRepository.save(Score.builder()
                 .routine(theLineUpRoutine)
-                .player(player)
+                .player(player1)
                 .score(100)
                 // Set date to 10:12 on 17th June 2023
                 .dateMade(LocalDateTime.of(2023, 6, 17, 10, 12, 0))
@@ -91,10 +137,18 @@ public class BootstrapData implements CommandLineRunner {
 
         Score score2 = scoreRepository.save(Score.builder()
                 .routine(theLineUpRoutine)
-                .player(player)
+                .player(player1)
                 .score(60)
                 // Set date to 10:12 on 17th June 2023
                 .dateMade(LocalDateTime.of(2023, 6, 17, 10, 12, 0))
+                .build());
+
+        Score score3 = scoreRepository.save(Score.builder()
+                .routine(theTenRedTLineUpRoutine)
+                .player(player2)
+                .score(90)
+                // Set date to 10:12 on 17th June 2023
+                .dateMade(LocalDateTime.of(2023, 6, 18, 12, 10, 0))
                 .build());
 
         log.debug("Loaded bootstrap data, routines={} users={} authorities={} scores={}",
